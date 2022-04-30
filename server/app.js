@@ -16,32 +16,21 @@ app.use(morgan('dev'));
 
 app.get('/', (req, res) => {
 
-    if (req.url[2] == "i") {
-        for (let i = 0; i < cache.length; i++) {
-            console.log(req.query["i"]);
-            if (req.url["i"] == cache[i]["imdbID"]) {
+    for (let i = 0; i < cache.length; i++) {
+        if (req.url["i"] == cache[i]["imdbID"]) {
+            res.status(200).send(cache[i]);
+        } else if (req.query["t"] == cache[i]["Title"]) {
                 res.status(200).send(cache[i]);
                 return;
-        } 
-      }
-    }
-    if (req.url[2] == "t") {
-        console.log("inside else if");
-        for (let i = 0; i < cache.length; i++) {
-            if (req.query["t"] == cache[i]["Title"]) {
-                res.status(200).send(cache[i]);
-                return;
-            }
         }
     }
+    
     var url = `http://www.omdbapi.com${req.url}&apikey=${api_key}`;
     axios.get(url)
     .then(movieObj => {
     cache.push(movieObj.data);
     res.status(200).send(movieObj.data);
     });
-
 });
-
 
 module.exports = app;
